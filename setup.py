@@ -9,7 +9,7 @@ from setuptools import setup
 # Package meta-data.
 NAME = 'pyforever'
 DESCRIPTION = 'Automatically execute a Python script whenever changes are made to it'
-URL = None
+URL = 'https://github.com/blu3r4y/pyforever'
 EMAIL = 'mario.kahlhofer@gmail.com'
 AUTHOR = 'Mario Kahlhofer'
 REQUIRES_PYTHON = '>=3.5.0'
