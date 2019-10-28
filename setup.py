@@ -4,7 +4,7 @@
 import io
 import os
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # Package meta-data.
 NAME = 'pyforever'
@@ -47,6 +47,7 @@ setup(
     python_requires=REQUIRES_PYTHON,
     url=URL,
     py_modules=[NAME],
+    packages=find_packages(),
     entry_points={
         'console_scripts': ['{0:s} = {0:s}.__main__:main'.format(NAME)],
     },
