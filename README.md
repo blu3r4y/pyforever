@@ -1,4 +1,4 @@
-# `pyforever`
+# pyforever
 
 Automatically execute a Python script whenever changes are made to it.
 
