@@ -14,7 +14,7 @@ def run_script(args):
     os.system("cls") if os.name == "nt" else os.system("clear")
 
     # run script and wait
-    p = subprocess.Popen(args, shell=True)
+    p = subprocess.Popen(args)
     p.wait()
 
 
