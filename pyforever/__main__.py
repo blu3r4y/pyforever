@@ -2,35 +2,54 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
-import warnings
 import subprocess
+import sys
 
 import watchgod
 
 
-def run_script(args):
-    # clear screen
-    os.system("cls") if os.name == "nt" else os.system("clear")
+def _run(args, clear=True):
+    """
+    Run the executable
+    :param args: The full path and arguments to be run
+    :param clear: Whether to clear the console or not (default: True)
+    """
 
-    # run script and wait
+    if clear:
+        os.system("cls") if os.name == "nt" else os.system("clear")
+
     p = subprocess.Popen(args)
     p.wait()
 
 
-def main():
-    if len(sys.argv) == 1:
-        warnings.warn("No arguments supplied")
-        exit(1)
+def _watch(args):
+    """
+    Run the executable on changes
+    :param args: The full path and arguments to be run
+    """
 
-    args = ["python"] + sys.argv[1:]
-
-    # initial run
-    run_script(args)
+    path = os.getcwd()
+    if os.path.isfile(sys.argv[1]):
+        path = os.path.dirname(os.path.abspath(sys.argv[1]))
+    print("Watching for changes in", path, "...")
+    print()
 
     # re-run the script if the current directory changes
-    for changes in watchgod.watch("."):
-        run_script(args)
+    for _ in watchgod.watch(path):
+        _run(args)
+
+
+def main():
+    if len(sys.argv) == 1:
+        sys.stderr.write("No arguments supplied.\n")
+        sys.stderr.flush()
+        exit(1)
+
+    args = [sys.executable] + sys.argv[1:]
+
+    # run once and start watching then
+    _run(args, clear=False)
+    _watch(args)
 
 
 if __name__ == "__main__":
