@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import asyncio
 import os
 import subprocess
 import sys
@@ -18,11 +19,11 @@ def _run(args, clear=True):
     if clear:
         os.system("cls") if os.name == "nt" else os.system("clear")
 
-    p = subprocess.Popen(args)
-    p.wait()
+    proc = subprocess.Popen(args)
+    return proc
 
 
-def _watch(args):
+async def _watch(args, proc=None):
     """
     Run the executable on changes
     :param args: The full path and arguments to be run
@@ -35,8 +36,10 @@ def _watch(args):
     print()
 
     # re-run the script if the current directory changes
-    for _ in watchgod.watch(path):
-        _run(args)
+    async for _ in watchgod.awatch(path):
+        if proc is not None:
+            proc.kill()
+        proc = _run(args)
 
 
 def main():
@@ -48,8 +51,8 @@ def main():
     args = [sys.executable] + sys.argv[1:]
 
     # run once and start watching then
-    _run(args, clear=False)
-    _watch(args)
+    proc = _run(args, clear=False)
+    asyncio.run(_watch(args, proc))
 
 
 if __name__ == "__main__":
