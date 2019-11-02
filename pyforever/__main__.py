@@ -8,6 +8,8 @@ import sys
 
 import watchgod
 
+from . import watchers
+
 
 def _run(args, clear=True):
     """
@@ -27,16 +29,30 @@ async def _watch(args, proc=None):
     """
     Run the executable on changes
     :param args: The full path and arguments to be run
+    :param proc: A process object that might already be running
     """
 
-    path = os.getcwd()
-    if os.path.isfile(sys.argv[1]):
-        path = os.path.dirname(os.path.abspath(sys.argv[1]))
-    print("Watching for changes in", path, "...")
+    script_path = sys.argv[1]
+    script_mode = os.path.isfile(script_path)
+
+    # use root path of the script (or cwd as a fall-back)
+    root_path = os.getcwd()
+    if script_mode:
+        script_path = os.path.abspath(script_path)
+        root_path = os.path.dirname(script_path)
+
+    # only watch the script (or the entire cwd as a fall-back)
+    watcher = watchgod.watcher.DefaultWatcher
+    kwargs = None
+    if script_mode:
+        watcher = watchers.FileWatcher
+        kwargs = dict(filename=os.path.basename(script_path))
+
+    print("Watching for changes in", script_path if script_mode else root_path, "...")
     print()
 
-    # re-run the script if the current directory changes
-    async for _ in watchgod.awatch(path):
+    # watch for changes
+    async for _ in watchgod.awatch(root_path, watcher_cls=watcher, watcher_kwargs=kwargs):
         if proc is not None:
             proc.kill()
         proc = _run(args)
