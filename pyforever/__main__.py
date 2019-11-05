@@ -68,7 +68,7 @@ def main():
 
     # run once and start watching then
     proc = _run(args, clear=False)
-    asyncio.run(_watch(args, proc))
+    asyncio.get_event_loop().run_until_complete(_watch(args, proc))
 
 
 if __name__ == "__main__":
